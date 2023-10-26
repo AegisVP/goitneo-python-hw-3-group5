@@ -6,15 +6,34 @@ from phonebook.Birthday import Birthday
 
 
 class Record:
+    fields = {
+        "name": "Контакт",
+        "phones": "Телефони",
+        "birthday": "День народження"
+    }
+
     def __init__(self, name):
         self.name = str(Name(name))
         self.phones = list()
-        self.birthday = '__/__/____'
+        self.birthday = None
     # end def
 
     def __str__(self):
-        return f"Контакт: {self.name}\n |_birthday: {self.birthday}\n '-телефони: {'; '.join(self.phones)}"
+        str = f"{self.name:>15}:   "
+        if self.birthday:
+            str += f"{self.fields['birthday']}: {self.birthday:<14}"
+        if self.phones:
+            str += f"{self.fields['phones']}: {'; '.join(self.phones)}"
+        return str
     # end def
+
+    def __getitem__(self, key):
+        if key in self.__dict__:
+            return self.__dict__[key]
+
+    def __setitem__(self, key, value):
+        if key in self.__dict__:
+            self.__dict__[key] = value
 
     @input_error
     def add_phone(self, phone):

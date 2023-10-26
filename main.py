@@ -41,13 +41,13 @@ def add_entry(name, *args):
             # end if
             book.add_record(record)
         except Exception as e:
-            if str(e) != '':
+            if str(e) != "":
                 msg.append(str(e))
         # end try
     # end for
 
     if len(msg) == 0:
-        msg.append('Нічого не вийшло записати')
+        msg.append("Нічого не вийшло записати")
     # end if
 
     return "\n".join(msg)
@@ -85,7 +85,7 @@ def modify_entry(name, *args):
                 raise Exception(f"Невідомий запис {arg}. Пропускаю")
             # end if
         except Exception as e:
-            if str(e) != '':
+            if str(e) != "":
                 msg.append(str(e))
             # end if
         # end try
@@ -96,7 +96,7 @@ def modify_entry(name, *args):
     # end while
 
     if len(msg) == 0:
-        msg.append('Нічого не вийшло змінити')
+        msg.append("Нічого не вийшло змінити")
     # end if
 
     return "\n".join(msg)
@@ -110,15 +110,32 @@ def delete_phone(name, phone):
 # end def
 
 
-def print_data(data, fields_to_show=[]):
+def print_data(data, fields_to_show=["all"]):
     if len(data) == 0:
         return "Записна книжка пуста"
     # end if
 
-    # msg = []
-    # for record in data:
-    #     rec_str =
-    return "\n\n".join([str(record) for record in data])
+    msg = []
+    data = list(data)
+    data.sort
+    for record in data:
+        if "all" in fields_to_show:
+            msg.append(str(record))
+            continue
+        # end if
+
+        temp_rec = Record(record.name)
+        for field in fields_to_show:
+            rec_data = record[field]
+
+            if rec_data != None:
+                temp_rec[field] = rec_data
+            # end if
+        # end for
+        msg.append(str(temp_rec))
+
+        # f"Контакт: {record.name}\n"
+    return "\n".join(msg)
 # end def
 
 
@@ -145,18 +162,18 @@ def run_bot():
             elif command in ["edit", "change", "modify"]:
                 print(modify_entry(*data))
             elif command in ["show", "find"]:
-                print(print_data(find_records(*data), ['all']))
-            elif command in ["phone"]:
-                print(print_data(book.data.values(), ['phone']))
-            elif command in ["birthday"]:
-                print(print_data(book.data.values()), ['birthday'])
+                print(print_data(find_records(*data), ["all"]))
+            elif command in ["phone", "phones"]:
+                print(print_data(find_records(*data), ["phones"]))
+            elif command in ["show-birthday", "birthday", "bday"]:
+                print(print_data(find_records(*data), ["birthday"]))
             elif command in ["all", "list", "list-all"]:
                 print(print_data(book.data.values()))
             elif command in ["help"]:
                 print(help_text)
             elif command == "d":  # ****** REMOVE AFTER TESTING ******
                 print(book.data.__dict__)
-            elif command in ['close', 'quit', 'exit', 'bye']:
+            elif command in ["close", "quit", "exit", "bye"]:
                 print("До побачення!")
                 break
             else:
