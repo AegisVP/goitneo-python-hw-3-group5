@@ -6,11 +6,11 @@ class NoDataEntered(Exception):
     pass
 
 
-class NoPhoneEntered(Exception):
+class UserNotFound(Exception):
     pass
 
 
-class UserNotFound(Exception):
+class PhoneNotEntered(Exception):
     pass
 
 
@@ -27,4 +27,12 @@ class IncorrectDataType(Exception):
 
 
 class DuplicateEntry(Exception):
+    pass
+
+
+class NameNotEntered(Exception):
+    pass
+
+
+class IncorrectNameFormat(Exception):
     pass

@@ -1,4 +1,4 @@
-from exceptions.Exceptions import DuplicateEntry, PhoneNotFound
+from exceptions.Exceptions import *
 from utils.InputError import input_error
 from phonebook.Name import Name
 from phonebook.Phone import Phone
@@ -36,13 +36,24 @@ class Record:
     # end def
 
     @input_error
-    def modify_phone(self, old_phone, new_phone):
+    def modify_phone(self, old_phone=None, new_phone=None, *args):
+        if len(args) > 0:
+            raise ValueError
+        if old_phone == None:
+            raise PhoneNotEntered('старий ')
+        # end if
+
+        if new_phone == None:
+            raise PhoneNotEntered('новий')
+        # end if
+
         try:
-            self.phones[self.phones.index(old_phone)] = str(Phone(new_phone))
+            idx = self.phones.index(old_phone)
         except KeyError:
             raise PhoneNotFound
         # end try
 
+        self.phones[idx] = str(Phone(new_phone))
         return "Номер телефона змінено успішно"
     # end def
 

@@ -1,7 +1,6 @@
 from variables import help_text
 from phonebook.Record import Record
 from phonebook.AddressBook import AddressBook
-from exceptions.Exceptions import UserNotFound
 
 
 book = AddressBook()
@@ -21,17 +20,6 @@ def find_records(*data):
 # end def
 
 
-def find_record(needle):
-    record = book.find(needle)
-
-    if record == None:
-        raise UserNotFound
-    # end if
-
-    return record
-# end def
-
-
 def add_entry(name, *phones):
     new_record = book.find(name) or Record(name)
 
@@ -47,20 +35,25 @@ def delete_entry(name, phone=None, *_):
     if phone == None:
         return book.delete_record(name)
     # end if
+
     return delete_phone(name, phone)
 # end def
 
 
-def modify_phone(name, old_phone, new_phone):
-    record = find_record(name)
+def modify_entry(name, *args):
+    record = book.find(name)
 
-    record.modify_phone(old_phone, new_phone)
+    if len(args) == 1:
+        return book.change_name(name, args[0])
+    # end if
+
+    record.modify_phone(*args)
     return book.modify_record(record)
 # end def
 
 
 def delete_phone(name, phone):
-    record = find_record(name)
+    record = book.find(name)
     record.delete_phone(phone)
     return book.modify_record(record)
 # end def
@@ -95,10 +88,7 @@ def run_bot():
             elif command in ["delete", "remove", "rem", "del"]:
                 print(delete_entry(*data))
             elif command in ["edit", "change", "modify"]:
-                # # # # # # #
-                #   TODO    #
-                # # # # # # #
-                pass
+                print(modify_entry(*data))
             elif command in ["show", "find"]:
                 print(find_records(*data))
             elif command in ["all", "list", "list-all"]:

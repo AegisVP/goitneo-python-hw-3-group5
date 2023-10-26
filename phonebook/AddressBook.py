@@ -1,9 +1,10 @@
+import re
 from phonebook.Record import Record
+from phonebook.Name import Name
 from writers.FileWriter import FileWriter
 from utils.InputError import input_error
-from exceptions.Exceptions import IncorrectDataType, DuplicateEntry
+from exceptions.Exceptions import *
 from collections import UserDict
-print(__name__)
 
 
 def save(func):
@@ -28,7 +29,13 @@ class AddressBook(UserDict):
 
     @input_error
     def find(self, needle):
-        return self.data.get(needle, None)
+        res = self.data.get(needle, None)
+
+        if res == None:
+            raise UserNotFound
+        # end if
+
+        return res
     # end def
 
     @input_error
@@ -51,6 +58,20 @@ class AddressBook(UserDict):
         self.data[record.name] = record
         return "Контакт доданий успішно"
     # end def
+
+    @input_error
+    def change_name(self, old_name, new_name=None):
+        if new_name == None:
+            raise NoDataEntered
+        if old_name == new_name:
+            raise DuplicateEntry
+        if new_name in self.data:
+            raise DuplicateEntry
+        # end if
+
+        self.data[old_name].name = str(Name(new_name))
+        self.data[new_name] = self.data.pop(old_name)
+        return f"Імʼя {old_name} змінено на {new_name}"
 
     @input_error
     def modify_record(self, record):

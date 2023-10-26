@@ -9,5 +9,6 @@ class Phone(Field):
             self.value = number
         else:
             raise IncorrectPhoneFormat
+        # end if
     # end def
 # end class
