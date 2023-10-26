@@ -1,13 +1,37 @@
 
 help_text = '''
 hi/hello - Вітаємось з чат-ботом
+
 help - Виводить перелік команд
-add/new <name> [<phone> {phone}...n] - Додати контакт або номер телефона
-change/edit/modify <name> <old phone> <new phone> - Змінити номер телефона
-change/edit/modify <name> <new_name> - Змінити імʼя контакта
-change/edit/modify/add/new <name> <birthday> - Задати День народження контакта
+
+add/new <name> [<birthday>][<phone>...n]
+  <name> - Імʼя контакта, обовʼязкове поле
+  <birthday> - День народження контакта, необовʼязкове поле (DD.MM.YYYY)
+  <phone> - контактний номер телефона (1234567890), довільна кількість
+
+change/edit/modify <name> [<new_name>][<birthday>][<old_phone> <new_phone>] - Змінити данні
+  <name> - Імʼя контакта, обовʼязкове поле
+  <new_name> - Нове імʼя контакта
+  <birthday> - День народження контакта, необовʼязкове поле (DD.MM.YYYY)
+  <old_phone> - номер телефона який треба змінити (1234567890)
+  <new_phone> - номер телефона який треба зберегти (123456780)
+
+
 del/delete/rem/remove <name> [<phone>] - Видалити контакт або номер телефона
-phone/show/find <name> - Показати данні контакта
+  <name> - Імʼя контакта, обовʼязкове поле
+  <phone> - один номер телефона для видалення (1234567890)
+
+show/find <name> - Показати данні контакта
+  <name> - Імʼя контакта, обовʼязкове поле
+
+phone <name> - Показати телефонні номери контакта
+  <name> - Імʼя контакта, обовʼязкове поле
+
+birthday/show-birthday <name> - Показати День народження контакта
+  <name> - Імʼя контакта, обовʼязкове поле
+
+birthdays/celebrate - Показати наступні Дні народження на наступні 7 днів
+
 all/list/list-all - Показати всі контакти
-close/quit/exit/bye - Завершити роботу
-'''
+
+close/quit/exit/bye - Завершити роботу'''
