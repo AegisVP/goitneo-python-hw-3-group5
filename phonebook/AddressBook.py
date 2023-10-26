@@ -20,9 +20,11 @@ class AddressBook(UserDict):
         filename = config.get("filename", "phonebook.json")
         self.database = FileWriter(filename)
         self.data = UserDict(self.database.load())
+    # end def
 
     def __del__(self):
         self.database.save(self.data)
+    # end def
 
     @input_error
     def find(self, needle):
