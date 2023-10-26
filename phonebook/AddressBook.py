@@ -1,10 +1,10 @@
-import re
+from datetime import datetime
 from phonebook.Record import Record
 from phonebook.Name import Name
 from writers.FileWriter import FileWriter
 from utils.InputError import input_error
 from exceptions.Exceptions import *
-from collections import UserDict
+from collections import UserDict, defaultdict
 
 
 def save(func):
@@ -94,8 +94,28 @@ class AddressBook(UserDict):
         return "Контакт видалений успішно"
     # end def
 
-    # def return_phonebook(self):
-    #     for record in self.data.values():
-    #         yield record
-    #     # end for
-    # # end def
+    def get_upcoming_birthdays(self, current_date=None):
+        if current_date == None or type(current_date) != datetime.date:
+            current_date = datetime.now().date()
+        # end if
+
+        next_birthdays = defaultdict(list)
+        for record in list(self.data.values()):
+            if record.birthday == None:
+                continue
+            # end if
+
+            celebrate_day = record.get_celebrate_date(current_date.year)
+            if celebrate_day == None:
+                continue
+
+            if (celebrate_day > current_date and (celebrate_day - current_date).days <= 7):
+                weekday: int = int(celebrate_day.strftime('%w'))
+                if weekday == 0 or weekday == 6:
+                    weekday = 1
+                # end if
+                next_birthdays[weekday].append(record)
+            # end if
+        # end for
+        return next_birthdays
+    # end def

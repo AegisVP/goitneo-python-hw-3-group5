@@ -4,6 +4,7 @@ from phonebook.Phone import Phone
 from phonebook.Name import Name
 from phonebook.Birthday import Birthday
 from phonebook.AddressBook import AddressBook
+from datetime import datetime
 
 
 book = AddressBook()
@@ -133,9 +134,26 @@ def print_data(data, fields_to_show=["all"]):
             # end if
         # end for
         msg.append(str(temp_rec))
-
-        # f"Контакт: {record.name}\n"
     return "\n".join(msg)
+# end def
+
+
+def get_birthdays_per_week():
+    next_birthdays = book.get_upcoming_birthdays()
+
+    output = []
+    for next_workday in Birthday.get_next_workdays():
+        if len(next_birthdays[next_workday]):
+            bday_str = ", ".join(list(map(
+                lambda x: f"{x.name} ({(datetime.now().year - int(x.birthday[6:]))})",
+                next_birthdays[next_workday]
+            )))
+            output.append(
+                f"{Birthday.weekdays_name[next_workday]:>11}: {bday_str}"
+            )
+        # end if
+    # end for
+    return "\n".join(output)
 # end def
 
 
@@ -169,10 +187,10 @@ def run_bot():
                 print(print_data(find_records(*data), ["birthday"]))
             elif command in ["all", "list", "list-all"]:
                 print(print_data(book.data.values()))
+            elif command in ["birthdays", "celebrate"]:
+                print(get_birthdays_per_week())
             elif command in ["help"]:
                 print(help_text)
-            elif command == "d":  # ****** REMOVE AFTER TESTING ******
-                print(book.data.__dict__)
             elif command in ["close", "quit", "exit", "bye"]:
                 print("До побачення!")
                 break

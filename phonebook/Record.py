@@ -1,3 +1,5 @@
+import calendar
+from datetime import datetime
 from exceptions.Exceptions import *
 from utils.InputError import input_error
 from phonebook.Name import Name
@@ -20,9 +22,9 @@ class Record:
 
     def __str__(self):
         str = f"{self.name:>15}:   "
-        if self.birthday:
+        if self.birthday != None:
             str += f"{self.fields['birthday']}: {self.birthday:<14}"
-        if self.phones:
+        if len(self.phones) > 0:
             str += f"{self.fields['phones']}: {'; '.join(self.phones)}"
         return str
     # end def
@@ -80,6 +82,25 @@ class Record:
 
         self.phones[idx] = str(Phone(new_phone))
         return "Номер телефона змінено успішно"
+    # end def
+
+    def get_celebrate_date(self, celebrate_year):
+        if self.birthday == None:
+            return
+        # end if
+
+        is_leap = calendar.isleap(celebrate_year)
+        bday = datetime.strptime(self.birthday, "%d.%m.%Y")
+        month = bday.month
+        day = bday.day
+        if (month == 2 and day == 29 and not is_leap):
+            day = 28
+
+        return datetime(
+            year=celebrate_year,
+            month=month,
+            day=day
+        ).date()
     # end def
 
     @input_error
