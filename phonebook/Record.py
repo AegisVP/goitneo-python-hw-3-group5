@@ -40,7 +40,7 @@ class Record:
         if len(args) > 0:
             raise ValueError
         if old_phone == None:
-            raise PhoneNotEntered('старий ')
+            raise PhoneNotEntered
         # end if
 
         if new_phone == None:

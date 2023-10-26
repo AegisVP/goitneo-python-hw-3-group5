@@ -64,9 +64,9 @@ class AddressBook(UserDict):
         if new_name == None:
             raise NoDataEntered
         if old_name == new_name:
-            raise DuplicateEntry
-        if new_name in self.data:
-            raise DuplicateEntry
+            return "Нічого не міняю"
+        if new_name in self.data.keys():
+            raise DuplicateEntry(new_name)
         # end if
 
         self.data[old_name].name = str(Name(new_name))

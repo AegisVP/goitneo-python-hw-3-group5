@@ -19,7 +19,7 @@ def input_error(func):
             raise
         except PhoneNotEntered as e:
             print(
-                f"Введіть {e}{(' ' if e.args.__len__ else '')}номер телефона")
+                f"Введіть {(str(e) + ' ' if len(e.args) > 0 else '')}номер телефона")
             raise
         except PhoneNotFound:
             print("Номер телефона не знайдено")
@@ -40,7 +40,7 @@ def input_error(func):
             print("Імʼя має починатись з літери та містити лише літери, цифри, _ та -")
             raise
         except DuplicateEntry as e:
-            print(f"{(e if e.args.__len__ else 'Запис')} вже існує")
+            print(f"{(str(e) if len(e.args) > 0 else 'Запис')} вже існує")
             raise
 
         except Exception as e:

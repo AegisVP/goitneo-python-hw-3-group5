@@ -21,7 +21,7 @@ def find_records(*data):
 
 
 def add_entry(name, *phones):
-    new_record = book.find(name) or Record(name)
+    new_record = book.data.get(name, Record(name))
 
     for phone in phones:
         new_record.add_phone(phone)
