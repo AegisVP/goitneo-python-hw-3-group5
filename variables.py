@@ -5,8 +5,9 @@ help - Виводить перелік команд
 add/new <name> [<phone> {phone}...n] - Додати контакт або номер телефона
 change/edit/modify <name> <old phone> <new phone> - Змінити номер телефона
 change/edit/modify <name> <new_name> - Змінити імʼя контакта
+change/edit/modify/add/new <name> <birthday> - Задати День народження контакта
 del/delete/rem/remove <name> [<phone>] - Видалити контакт або номер телефона
-show/find <name> - Показати данні контакта
+phone/show/find <name> - Показати данні контакта
 all/list/list-all - Показати всі контакти
 close/quit/exit/bye - Завершити роботу
 '''

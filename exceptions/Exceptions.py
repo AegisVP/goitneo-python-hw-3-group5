@@ -36,3 +36,7 @@ class NameNotEntered(Exception):
 
 class IncorrectNameFormat(Exception):
     pass
+
+
+class IncorrectDateFormat(Exception):
+    pass

@@ -6,7 +6,7 @@ from exceptions.Exceptions import IncorrectPhoneFormat
 class Phone(Field):
     regex = r"\d{10}"
 
-    @staticmethod
+    @classmethod
     def is_phone(cls, number):
         return re.fullmatch(cls.regex, number)
     # end def

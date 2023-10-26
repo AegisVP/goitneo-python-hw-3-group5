@@ -2,16 +2,18 @@ from exceptions.Exceptions import *
 from utils.InputError import input_error
 from phonebook.Name import Name
 from phonebook.Phone import Phone
+from phonebook.Birthday import Birthday
 
 
 class Record:
     def __init__(self, name):
         self.name = str(Name(name))
         self.phones = list()
+        self.birthday = '__/__/____'
     # end def
 
     def __str__(self):
-        return f"Контакт: {self.name}, телефони: {'; '.join(self.phones)}"
+        return f"Контакт: {self.name}\n |_birthday: {self.birthday}\n '-телефони: {'; '.join(self.phones)}"
     # end def
 
     @input_error
@@ -22,6 +24,12 @@ class Record:
 
         self.phones.append(str(Phone(phone)))
         return "Номер телефона додано успішно"
+    # end def
+
+    @input_error
+    def set_birthday(self, birthday):
+        self.birthday = str(Birthday(birthday))
+        return "День народження записано успішно"
     # end def
 
     @input_error
@@ -38,18 +46,16 @@ class Record:
     @input_error
     def modify_phone(self, old_phone=None, new_phone=None, *args):
         if len(args) > 0:
-            raise ValueError
+            raise Exception('Забагато аргументів')
         if old_phone == None:
             raise PhoneNotEntered
-        # end if
-
         if new_phone == None:
             raise PhoneNotEntered('новий')
         # end if
 
         try:
             idx = self.phones.index(old_phone)
-        except KeyError:
+        except ValueError:
             raise PhoneNotFound
         # end try
 

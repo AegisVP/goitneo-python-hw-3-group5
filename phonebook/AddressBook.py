@@ -9,8 +9,9 @@ from collections import UserDict
 
 def save(func):
     def inner(self, *args, **kwargs):
-        func(self, *args, **kwargs)
+        msg = func(self, *args, **kwargs)
         self.database.save(self.data)
+        return msg
     # end def
     return inner
 # end def
@@ -39,7 +40,7 @@ class AddressBook(UserDict):
     # end def
 
     @input_error
-    # @save
+    @save
     def add_record(self, record):
         if type(record) != Record:
             raise IncorrectDataType
@@ -60,6 +61,7 @@ class AddressBook(UserDict):
     # end def
 
     @input_error
+    @save
     def change_name(self, old_name, new_name=None):
         if new_name == None:
             raise NoDataEntered
@@ -72,8 +74,10 @@ class AddressBook(UserDict):
         self.data[old_name].name = str(Name(new_name))
         self.data[new_name] = self.data.pop(old_name)
         return f"Імʼя {old_name} змінено на {new_name}"
+    # end def
 
     @input_error
+    @save
     def modify_record(self, record):
         if type(record) != Record:
             raise IncorrectDataType
@@ -84,13 +88,14 @@ class AddressBook(UserDict):
     # end def
 
     @input_error
+    @save
     def delete_record(self, name):
         self.data.pop(name)
         return "Контакт видалений успішно"
     # end def
 
-    def return_phonebook(self):
-        for record in self.data.values():
-            yield record
-        # end for
-    # end def
+    # def return_phonebook(self):
+    #     for record in self.data.values():
+    #         yield record
+    #     # end for
+    # # end def

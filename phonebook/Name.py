@@ -6,9 +6,9 @@ from exceptions.Exceptions import IncorrectNameFormat
 class Name(Field):
     regex = r"[A-Za-z]+[_\-\w]*"
 
-    @staticmethod
-    def is_name(cls, number):
-        return re.fullmatch(cls.regex, number)
+    @classmethod
+    def is_name(cls, name):
+        return re.fullmatch(cls.regex, name)
     # end def
 
     def __init__(self, name):

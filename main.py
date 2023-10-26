@@ -1,5 +1,8 @@
 from variables import help_text
 from phonebook.Record import Record
+from phonebook.Phone import Phone
+from phonebook.Name import Name
+from phonebook.Birthday import Birthday
 from phonebook.AddressBook import AddressBook
 
 
@@ -15,19 +18,39 @@ def find_records(*data):
         # end if
     # end for
 
-    return print_data(found) if len(found) > 0 else "Нічого не знайшов"
+    return found if len(found) > 0 else "Нічого не знайдено"
     # end for
 # end def
 
 
-def add_entry(name, *phones):
-    new_record = book.data.get(name, Record(name))
+def add_entry(name, *args):
+    if len(args) < 1:
+        raise Exception("Не можу додати пустий запис")
 
-    for phone in phones:
-        new_record.add_phone(phone)
+    record = book.data.get(name, None) or Record(name)
+
+    msg = []
+    for arg in args:
+        try:
+            if Birthday.is_birthday(arg):
+                msg.append(record.set_birthday(arg))
+            elif Phone.is_phone(arg):
+                msg.append(record.add_phone(arg))
+            else:
+                raise Exception(f"Невідомий запис {arg}. Пропускаю")
+            # end if
+            book.add_record(record)
+        except Exception as e:
+            if str(e) != '':
+                msg.append(str(e))
+        # end try
     # end for
 
-    return book.add_record(new_record)
+    if len(msg) == 0:
+        msg.append('Нічого не вийшло записати')
+    # end if
+
+    return "\n".join(msg)
 # end def
 
 
@@ -41,14 +64,42 @@ def delete_entry(name, phone=None, *_):
 
 
 def modify_entry(name, *args):
-    record = book.find(name)
+    if len(args) < 1:
+        raise Exception("Недостатньо аргументів")
 
-    if len(args) == 1:
-        return book.change_name(name, args[0])
+    record = book.find(name)
+    args = list(args)
+
+    msg = []
+    while True:
+        arg = args.pop(0)
+
+        try:
+            if Birthday.is_birthday(arg):
+                msg.append(record.set_birthday(arg))
+            elif Name.is_name(arg):
+                msg.append(book.change_name(name, arg))
+            elif Phone.is_phone(arg):
+                msg.append(record.modify_phone(arg, args.pop(0)))
+            else:
+                raise Exception(f"Невідомий запис {arg}. Пропускаю")
+            # end if
+        except Exception as e:
+            if str(e) != '':
+                msg.append(str(e))
+            # end if
+        # end try
+
+        if len(args) == 0:
+            break
+        # end if
+    # end while
+
+    if len(msg) == 0:
+        msg.append('Нічого не вийшло змінити')
     # end if
 
-    record.modify_phone(*args)
-    return book.modify_record(record)
+    return "\n".join(msg)
 # end def
 
 
@@ -59,11 +110,15 @@ def delete_phone(name, phone):
 # end def
 
 
-def print_data(data=[]):
-    if len(book) > 0:
-        return "\n".join([str(record) for record in data])
+def print_data(data, fields_to_show=[]):
+    if len(data) == 0:
+        return "Записна книжка пуста"
     # end if
-    return "Записна книжка пуста"
+
+    # msg = []
+    # for record in data:
+    #     rec_str =
+    return "\n\n".join([str(record) for record in data])
 # end def
 
 
@@ -90,18 +145,25 @@ def run_bot():
             elif command in ["edit", "change", "modify"]:
                 print(modify_entry(*data))
             elif command in ["show", "find"]:
-                print(find_records(*data))
+                print(print_data(find_records(*data), ['all']))
+            elif command in ["phone"]:
+                print(print_data(book.data.values(), ['phone']))
+            elif command in ["birthday"]:
+                print(print_data(book.data.values()), ['birthday'])
             elif command in ["all", "list", "list-all"]:
-                print(print_data(book.return_phonebook()))
+                print(print_data(book.data.values()))
             elif command in ["help"]:
                 print(help_text)
+            elif command == "d":  # ****** REMOVE AFTER TESTING ******
+                print(book.data.__dict__)
             elif command in ['close', 'quit', 'exit', 'bye']:
                 print("До побачення!")
                 break
             else:
                 print("Сформулюйте запит відповідно командам в 'help'")
             # end if
-        except Exception:
+        except Exception as e:
+            print(e)
             continue
         # end try
     # end while
