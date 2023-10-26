@@ -173,7 +173,7 @@ def run_bot():
 
             if command in ["hello", "hi"]:
                 print("Чим можу допомогті?")
-            elif command in ["add", "new"]:
+            elif command in ["add", "new", "add-birthday"]:
                 print(add_entry(*data))
             elif command in ["delete", "remove", "rem", "del"]:
                 print(delete_entry(*data))
