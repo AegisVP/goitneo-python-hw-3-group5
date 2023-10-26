@@ -4,11 +4,17 @@ from exceptions.Exceptions import IncorrectPhoneFormat
 
 
 class Phone(Field):
+    regex = r"\d{10}"
+
+    @staticmethod
+    def is_phone(cls, number):
+        return re.fullmatch(cls.regex, number)
+    # end def
+
     def __init__(self, number):
-        if re.fullmatch(r"\d{10}", number):
-            self.value = number
-        else:
+        if not self.is_phone(number):
             raise IncorrectPhoneFormat
         # end if
+        self.value = number
     # end def
 # end class
