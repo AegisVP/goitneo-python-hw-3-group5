@@ -1,5 +1,5 @@
 from phonebook.Record import Record
-# from writers.FileWriter import FileWriter
+from writers.FileWriter import FileWriter
 from utils.InputError import input_error
 from exceptions.Exceptions import IncorrectDataType, DuplicateEntry
 from collections import UserDict
@@ -16,13 +16,13 @@ def save(func):
 
 
 class AddressBook(UserDict):
-    # def __init__(self, **config):
-    #     filename = config.get("filename", "phonebook.json")
-    #     self.database = FileWriter(filename)
-    #     self.data = self.database.load()
+    def __init__(self, **config):
+        filename = config.get("filename", "phonebook.json")
+        self.database = FileWriter(filename)
+        self.data = UserDict(self.database.load())
 
-    # def __del__(self):
-    #     self.save()
+    def __del__(self):
+        self.database.save(self.data)
 
     @input_error
     def find(self, needle):

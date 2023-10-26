@@ -1,4 +1,4 @@
-import json
+import pickle
 from pathlib import Path
 
 
@@ -10,10 +10,10 @@ class FileWriter:
 
     def save(self, data):
         if FileWriter.DO_SAVE:
-            self.file.write_text(json.dumps(data))
+            self.file.write_bytes(pickle.dumps(data))
 
     def load(self):
         if not self.file.exists():
-            self.save('')
+            return
 
-        return json.loads(self.file.read_text())
+        return pickle.loads(self.file.read_bytes())
