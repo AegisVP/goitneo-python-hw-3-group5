@@ -21,10 +21,11 @@ class Birthday(Field):
     def is_date_format(cls, date):
         return re.fullmatch(cls.regex, date)
     # end def
-    
+
     @classmethod
     def is_date_valid(cls, date):
-        date = datetime.strptime(re.sub(cls.replace_regex, cls.replace_with, date), cls.str_format)
+        date = datetime.strptime(
+            re.sub(cls.replace_regex, cls.replace_with, date), cls.str_format)
         return type(datetime.strftime(date, cls.str_format)) == datetime.datetime
     # end def
 
@@ -56,7 +57,7 @@ class Birthday(Field):
         try:
             self.value = datetime.strftime(
                 datetime.strptime(
-                    re.sub(self.replace_regex, self.replace_with, birthday), 
+                    re.sub(self.replace_regex, self.replace_with, birthday),
                     self.str_format
                 ),
                 self.str_format

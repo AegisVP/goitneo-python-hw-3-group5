@@ -1,12 +1,38 @@
-class InsufficientDataEntered(Exception): pass
-class NoDataFound(Exception): pass
-class IncorrectDataType(Exception): pass
-class IncorrectNameFormat(Exception): pass
-class IncorrectPhoneFormat(Exception): pass
-class IncorrectDateFormat(Exception): pass
-class DuplicateEntry(Exception): pass
-class InvalidDate(Exception): pass
-class FileAccessError(Exception): pass
+class InsufficientDataEntered(Exception):
+    pass
+
+
+class NoDataFound(Exception):
+    pass
+
+
+class IncorrectDataType(Exception):
+    pass
+
+
+class IncorrectNameFormat(Exception):
+    pass
+
+
+class IncorrectPhoneFormat(Exception):
+    pass
+
+
+class IncorrectDateFormat(Exception):
+    pass
+
+
+class DuplicateEntry(Exception):
+    pass
+
+
+class InvalidDate(Exception):
+    pass
+
+
+class FileAccessError(Exception):
+    pass
+
 
 def error_handler(func):
     def inner(*args, **kwargs):
@@ -22,10 +48,12 @@ def error_handler(func):
             print(f"{e if len(str(e)) else 'Некорректний тип данних'}")
             raise IncorrectDataType
         except IncorrectNameFormat as e:
-            print(f"{e if len(str(e)) else 'Імʼя починається з літери та містить лише літери, цифри, _ та -'}")
+            print(
+                f"{e if len(str(e)) else 'Імʼя починається з літери та містить лише літери, цифри, _ та -'}")
             raise IncorrectNameFormat
         except IncorrectPhoneFormat as e:
-            print(f"{e if len(str(e)) else 'Введіть 10 цифр без символів як номер телефона'}")
+            print(
+                f"{e if len(str(e)) else 'Введіть 10 цифр без символів як номер телефона'}")
             raise IncorrectPhoneFormat
         except IncorrectDateFormat as e:
             print(f"{e if len(str(e)) else 'Дата має бути в форматі DD.MM.YYYY'}")
@@ -37,7 +65,8 @@ def error_handler(func):
             print(f"{e if len(str(e)) else 'Дата не існує'}")
             raise InvalidDate
         except FileAccessError as e:
-            print(f"Неможливо {({'read': 'прочитати файл', 'write': 'записати в файл'}[str(e)])}")
+            print(
+                f"Неможливо {({'read': 'прочитати файл', 'write': 'записати в файл'}[str(e)])}")
             raise FileAccessError
         except ValueError as e:
             print(e)

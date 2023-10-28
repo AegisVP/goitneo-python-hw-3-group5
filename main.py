@@ -8,6 +8,7 @@ from exceptions.Exceptions import *
 
 book = dict()
 
+
 @error_handler
 def find_records(*data):
     found = []
@@ -21,6 +22,7 @@ def find_records(*data):
     return found
     # end for
 # end def
+
 
 @error_handler
 def add_entry(name, *args):
@@ -47,6 +49,7 @@ def add_entry(name, *args):
 
     return "\n".join(msg)
 # end def
+
 
 @error_handler
 def modify_entry(name, *args):
@@ -81,6 +84,7 @@ def modify_entry(name, *args):
     return "\n".join(msg)
 # end def
 
+
 @error_handler
 def delete_entry(name, phone=None):
     if phone == None:
@@ -93,6 +97,7 @@ def delete_entry(name, phone=None):
 
     return book.find(name).delete_phone(phone)
 # end def
+
 
 @error_handler
 def print_data(data, fields_to_show=["all"]):
@@ -214,7 +219,8 @@ def run_bot():
             # end if
 
         except Exception as e:
-            if len(str(e)): print(e)
+            if len(str(e)):
+                print(e)
             continue
         # end try
     # end while
@@ -222,6 +228,6 @@ def run_bot():
 
 
 if __name__ == "__main__":
-    book = AddressBook(filename = Path(__file__).parent / 'phonebook.bin')
+    book = AddressBook(filename=Path(__file__).parent / 'phonebook.bin')
     run_bot()
 # end if
