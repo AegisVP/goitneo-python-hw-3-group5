@@ -1,15 +1,14 @@
-from variables import help_text
-from phonebook.Record import Record
-from phonebook.Phone import Phone
-from phonebook.Name import Name
-from phonebook.Birthday import Birthday
-from phonebook.AddressBook import AddressBook
+import re
 from datetime import datetime
+from pathlib import Path
+from variables import *
+from phonebook import Record, Phone, Name, Birthday, AddressBook
+from exceptions.Exceptions import *
 
 
-book = AddressBook()
+book = dict()
 
-
+@error_handler
 def find_records(*data):
     found = []
     for needle in data:
@@ -19,14 +18,14 @@ def find_records(*data):
         # end if
     # end for
 
-    return found if len(found) > 0 else "Нічого не знайдено"
+    return found
     # end for
 # end def
 
-
+@error_handler
 def add_entry(name, *args):
     if len(args) < 1:
-        raise Exception("Не можу додати пустий запис")
+        raise InsufficientDataEntered
 
     record = book.data.get(name, None) or Record(name)
 
@@ -38,12 +37,11 @@ def add_entry(name, *args):
             elif Phone.is_phone(arg):
                 msg.append(record.add_phone(arg))
             else:
-                raise Exception(f"Невідомий запис {arg}. Пропускаю")
+                raise Exception
             # end if
             book.add_record(record)
         except Exception as e:
-            if str(e) != "":
-                msg.append(str(e))
+            msg.append((f"Невідомий запис {arg}. Пропускаю") if (str(e) == "") else str(e))
         # end try
     # end for
 
@@ -54,41 +52,47 @@ def add_entry(name, *args):
     return "\n".join(msg)
 # end def
 
-
-def delete_entry(name, phone=None, *_):
+@error_handler
+def delete_entry(name, phone=None):
     if phone == None:
         return book.delete_record(name)
     # end if
 
-    return delete_phone(name, phone)
+    if Birthday.is_birthday(phone):
+        raise IncorrectDataType
+    # end if
+    
+    return book.find(name).delete_phone(phone)
 # end def
 
-
+@error_handler
 def modify_entry(name, *args):
     if len(args) < 1:
-        raise Exception("Недостатньо аргументів")
+        raise InsufficientDataEntered
 
-    record = book.find(name)
+    record: Record = book.find(name)
     args = list(args)
 
     msg = []
     while True:
-        arg = args.pop(0)
+        arg: str = args.pop(0)
 
         try:
             if Birthday.is_birthday(arg):
                 msg.append(record.set_birthday(arg))
             elif Name.is_name(arg):
                 msg.append(book.change_name(name, arg))
-            elif Phone.is_phone(arg):
-                msg.append(record.modify_phone(arg, args.pop(0)))
             else:
-                raise Exception(f"Невідомий запис {arg}. Пропускаю")
+                phonelist = re.split('-|_', arg)
+                
+                if len(phonelist) == 2 and Phone.is_phone(phonelist[0]) and Phone.is_phone(phonelist[1]):
+                    msg.append(record.modify_phone(phonelist[0], phonelist[1]))
+                else:
+                    raise Exception
+                # end if
             # end if
         except Exception as e:
-            if str(e) != "":
-                msg.append(str(e))
-            # end if
+            msg.append((f"Запис '{arg}' в невірному форматі. Пропускаю") if (str(e) == "") else str(e))
         # end try
 
         if len(args) == 0:
@@ -97,23 +101,16 @@ def modify_entry(name, *args):
     # end while
 
     if len(msg) == 0:
-        msg.append("Нічого не вийшло змінити")
+        msg.append("Нічого не змінено")
     # end if
 
     return "\n".join(msg)
 # end def
 
-
-def delete_phone(name, phone):
-    record = book.find(name)
-    record.delete_phone(phone)
-    return book.modify_record(record)
-# end def
-
-
+@error_handler
 def print_data(data, fields_to_show=["all"]):
     if len(data) == 0:
-        return "Записна книжка пуста"
+        raise NoDataFound
     # end if
 
     msg = []
@@ -153,13 +150,33 @@ def get_birthdays_per_week():
             )
         # end if
     # end for
-    return "\n".join(output)
+    
+    if len(output):
+        return "\n".join(output)
+    # end if
+    
+    return "На наступному тижні немає іменинників"
 # end def
 
 
 def run_bot():
     global book
-    print("Вітаю!")
+    
+    try:
+        book.load()
+    except FileAccessError as e:
+        if str(e) == "read":
+            print("Була помилка читання файла.")
+        else:
+            raise Exception("Unknow error")
+        # end if
+    except Exception as e:
+        print(e)
+        print("#\n#  Аварійне завершення програми!\n#")
+        exit(0)
+    # end try
+    
+    print(greeting)
 
     while True:
         try:
@@ -172,7 +189,9 @@ def run_bot():
             command = command.casefold()
 
             if command in ["hello", "hi"]:
-                print("Чим можу допомогті?")
+                print("Чим я можу допомогти?")
+            elif command in ["help"]:
+                print(help_text)
             elif command in ["add", "new", "add-birthday"]:
                 print(add_entry(*data))
             elif command in ["delete", "remove", "rem", "del"]:
@@ -189,14 +208,20 @@ def run_bot():
                 print(print_data(book.data.values()))
             elif command in ["birthdays", "celebrate"]:
                 print(get_birthdays_per_week())
-            elif command in ["help"]:
-                print(help_text)
             elif command in ["close", "quit", "exit", "bye"]:
                 print("До побачення!")
+                book.save()
                 break
+            elif command in ["save"]:
+                book.save()
+                print("Данні збережено")
+            elif command in ["load"]:
+                book.load()
+                print("Данні завантажено")
             else:
                 print("Сформулюйте запит відповідно командам в 'help'")
             # end if
+            
         except Exception as e:
             print(e)
             continue
@@ -206,5 +231,6 @@ def run_bot():
 
 
 if __name__ == "__main__":
+    book = AddressBook(filename = Path(__file__).parent / 'phonebook.bin')
     run_bot()
 # end if

@@ -7,3 +7,7 @@ class Field:
         return str(self.value)
     # end def
 # end class
+
+if __name__ == "__main__":
+    exit()
+# end if

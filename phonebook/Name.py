@@ -1,5 +1,5 @@
 import re
-from phonebook.Field import Field
+from phonebook import Field
 from exceptions.Exceptions import IncorrectNameFormat
 
 
@@ -18,3 +18,8 @@ class Name(Field):
         self.value = name
     # end def
 # end class
+
+
+if __name__ == "__main__":
+    exit()
+# end if

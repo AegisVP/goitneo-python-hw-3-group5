@@ -1,6 +1,6 @@
 import re
-from phonebook.Field import Field
-from exceptions.Exceptions import IncorrectDateFormat
+from phonebook import Field
+from exceptions.Exceptions import IncorrectDateFormat, InvalidDate
 from datetime import datetime
 
 
@@ -49,7 +49,12 @@ class Birthday(Field):
             bday = datetime.strptime(bday, "%d.%m.%Y")
             self.value = datetime.strftime(bday, "%d.%m.%Y")
         except Exception as e:
-            raise Exception("Not a valid date")
+            raise InvalidDate
         # end try
     # end def
 # end class
+
+
+if __name__ == "__main__":
+    exit()
+# end if

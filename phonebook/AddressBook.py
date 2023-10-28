@@ -1,16 +1,14 @@
 from datetime import datetime
-from phonebook.Record import Record
-from phonebook.Name import Name
-from writers.FileWriter import FileWriter
-from utils.InputError import input_error
-from exceptions.Exceptions import *
 from collections import UserDict, defaultdict
+from phonebook import Record, Name
+from exceptions.Exceptions import *
+from writers.FileWriter import FileWriter
 
 
-def save(func):
+def saver(func):
     def inner(self, *args, **kwargs):
         msg = func(self, *args, **kwargs)
-        self.database.save(self.data)
+        self.save()
         return msg
     # end def
     return inner
@@ -19,28 +17,32 @@ def save(func):
 
 class AddressBook(UserDict):
     def __init__(self, **config):
-        filename = config.get("filename", "phonebook.json")
-        self.database = FileWriter(filename)
-        self.data = UserDict(self.database.load())
+        filename = config.get("filename")
+        self.data = UserDict()
+        self.database_connector = FileWriter(filename)
+    # end def
+    
+    @error_handler
+    def save(self):
+        self.database_connector.save(self.data)
+    # end def
+    
+    @error_handler
+    def load(self):
+        self.data = UserDict(self.database_connector.load())
     # end def
 
-    def __del__(self):
-        self.database.save(self.data)
-    # end def
-
-    @input_error
     def find(self, needle):
         res = self.data.get(needle, None)
 
         if res == None:
-            raise UserNotFound
+            raise NoDataFound
         # end if
 
         return res
     # end def
 
-    @input_error
-    @save
+    @saver
     def add_record(self, record):
         if type(record) != Record:
             raise IncorrectDataType
@@ -60,11 +62,10 @@ class AddressBook(UserDict):
         return "Контакт доданий успішно"
     # end def
 
-    @input_error
-    @save
+    @saver
     def change_name(self, old_name, new_name=None):
         if new_name == None:
-            raise NoDataEntered
+            raise InsufficientDataEntered
         if old_name == new_name:
             return "Нічого не міняю"
         if new_name in self.data.keys():
@@ -76,8 +77,7 @@ class AddressBook(UserDict):
         return f"Імʼя {old_name} змінено на {new_name}"
     # end def
 
-    @input_error
-    @save
+    @saver
     def modify_record(self, record):
         if type(record) != Record:
             raise IncorrectDataType
@@ -87,9 +87,12 @@ class AddressBook(UserDict):
         return "Контакт змінений успішно"
     # end def
 
-    @input_error
-    @save
+    @saver
     def delete_record(self, name):
+        if name not in self.data:
+            raise NoDataFound
+        # end if
+        
         self.data.pop(name)
         return "Контакт видалений успішно"
     # end def
@@ -110,7 +113,7 @@ class AddressBook(UserDict):
                 continue
 
             if (celebrate_day > current_date and (celebrate_day - current_date).days <= 7):
-                weekday: int = int(celebrate_day.strftime('%w'))
+                weekday: int = int(celebrate_day.strftime("%w"))
                 if weekday == 0 or weekday == 6:
                     weekday = 1
                 # end if
@@ -119,3 +122,9 @@ class AddressBook(UserDict):
         # end for
         return next_birthdays
     # end def
+# end class
+
+
+if __name__ == "__main__":
+    exit()
+# end if

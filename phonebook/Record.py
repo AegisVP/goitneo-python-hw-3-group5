@@ -1,10 +1,7 @@
 import calendar
 from datetime import datetime
 from exceptions.Exceptions import *
-from utils.InputError import input_error
-from phonebook.Name import Name
-from phonebook.Phone import Phone
-from phonebook.Birthday import Birthday
+from phonebook import Name, Phone, Birthday
 
 
 class Record:
@@ -26,62 +23,55 @@ class Record:
             str += f"{self.fields['birthday']}: {self.birthday:<14}"
         if len(self.phones) > 0:
             str += f"{self.fields['phones']}: {'; '.join(self.phones)}"
+        # end if
         return str
     # end def
 
     def __getitem__(self, key):
         if key in self.__dict__:
             return self.__dict__[key]
+        # end if
+    # end def
 
     def __setitem__(self, key, value):
         if key in self.__dict__:
             self.__dict__[key] = value
+        # end if
+    # end def
 
-    @input_error
     def add_phone(self, phone):
         if phone in self.phones:
-            raise DuplicateEntry('Телефон')
+            raise DuplicateEntry("Телефон")
         # end if
 
         self.phones.append(str(Phone(phone)))
-        return "Номер телефона додано успішно"
+        return "Телефон доданий успішно"
     # end def
 
-    @input_error
     def set_birthday(self, birthday):
         self.birthday = str(Birthday(birthday))
-        return "День народження записано успішно"
+        return "День народження записаний"
     # end def
 
-    @input_error
     def delete_phone(self, phone):
         try:
             self.phones.remove(str(Phone(phone)))
         except ValueError:
-            raise PhoneNotFound
+            raise NoDataFound
         # end try
 
-        return "Номер телефона видалено успішно"
+        return "Телефон видалений успішно"
     # end def
 
-    @input_error
-    def modify_phone(self, old_phone=None, new_phone=None, *args):
-        if len(args) > 0:
-            raise Exception('Забагато аргументів')
-        if old_phone == None:
-            raise PhoneNotEntered
-        if new_phone == None:
-            raise PhoneNotEntered('новий')
-        # end if
-
+    def modify_phone(self, old_phone=None, new_phone=None):
         try:
             idx = self.phones.index(old_phone)
         except ValueError:
-            raise PhoneNotFound
+            raise NoDataFound
         # end try
 
         self.phones[idx] = str(Phone(new_phone))
-        return "Номер телефона змінено успішно"
+        return "Телефон змінений успішно"
     # end def
 
     def get_celebrate_date(self, celebrate_year):
@@ -102,10 +92,4 @@ class Record:
             day=day
         ).date()
     # end def
-
-    @input_error
-    def find(self, needle):
-        if needle not in self.phones:
-            raise PhoneNotFound
-        return needle
-    # end def
+# end class
