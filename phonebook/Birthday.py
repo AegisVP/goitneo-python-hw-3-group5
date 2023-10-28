@@ -6,6 +6,9 @@ from datetime import datetime
 
 class Birthday(Field):
     regex = r"\d{2}[./\\\-]\d{2}[./\\\-]\d{4}"
+    replace_regex = r"[/\\\-]"
+    replace_with = "."
+    str_format = "%d.%m.%Y"
     weekdays_name = {
         1: "Понеділок",
         2: "Вівторок",
@@ -15,8 +18,14 @@ class Birthday(Field):
     }
 
     @classmethod
-    def is_birthday(cls, birthday):
-        return re.fullmatch(cls.regex, birthday)
+    def is_date_format(cls, date):
+        return re.fullmatch(cls.regex, date)
+    # end def
+    
+    @classmethod
+    def is_date_valid(cls, date):
+        date = datetime.strptime(re.sub(cls.replace_regex, cls.replace_with, date), cls.str_format)
+        return type(datetime.strftime(date, cls.str_format)) == datetime.datetime
     # end def
 
     @classmethod
@@ -40,21 +49,20 @@ class Birthday(Field):
     # end def
 
     def __init__(self, birthday):
-        if not self.is_birthday(birthday):
+        if not self.is_date_format(birthday):
             raise IncorrectDateFormat
         # end if
 
         try:
-            bday = re.sub(r"[/\\\-]", ".", birthday)
-            bday = datetime.strptime(bday, "%d.%m.%Y")
-            self.value = datetime.strftime(bday, "%d.%m.%Y")
+            self.value = datetime.strftime(
+                datetime.strptime(
+                    re.sub(self.replace_regex, self.replace_with, birthday), 
+                    self.str_format
+                ),
+                self.str_format
+            )
         except Exception as e:
             raise InvalidDate
         # end try
     # end def
 # end class
-
-
-if __name__ == "__main__":
-    exit()
-# end if

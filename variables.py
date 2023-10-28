@@ -4,15 +4,14 @@ hi/hello - Вітаємось з чат-ботом
 
 help - Виводить перелік команд
 
-add/new <name> [<birthday>][<phone>...n]
+add/new <name> [<birthday> [<phone>...n]]
   <name> - Імʼя контакта, обовʼязкове поле
   <birthday> - День народження контакта, необовʼязкове поле (DD.MM.YYYY)
   <phone> - контактний номер телефона (1234567890), довільна кількість
 
-change/edit/modify <name> [<new_name>][<birthday>][<old_phone>-<new_phone>] - Змінити данні
+change/edit/modify <name> [<new_name>][<old_phone>-<new_phone>...n] - Змінити данні
   <name> - Імʼя контакта, обовʼязкове поле
   <new_name> - Нове імʼя контакта
-  <birthday> - День народження контакта, необовʼязкове поле (DD.MM.YYYY)
   <old_phone>-<new_phone> - Зміна номера телефона де:
     <old_phone> - номер телефона який треба видалити (1234567890)
     <new_phone> - номер телефона який треба зберегти (1234567890)

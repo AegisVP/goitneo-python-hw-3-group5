@@ -31,18 +31,14 @@ def add_entry(name, *args):
 
     msg = []
     for arg in args:
-        try:
-            if Birthday.is_birthday(arg):
-                msg.append(record.set_birthday(arg))
-            elif Phone.is_phone(arg):
-                msg.append(record.add_phone(arg))
-            else:
-                raise Exception
-            # end if
-            book.add_record(record)
-        except Exception as e:
-            msg.append((f"Невідомий запис {arg}. Пропускаю") if (str(e) == "") else str(e))
-        # end try
+        if Birthday.is_date_format(arg):
+            msg.append(record.set_birthday(arg))
+        elif Phone.is_phone(arg):
+            msg.append(record.add_phone(arg))
+        else:
+            msg.append(f"Запис '{arg}' в невірному форматі. Пропускаю")
+        # end if
+        msg.append(book.add_record(record))
     # end for
 
     if len(msg) == 0:
@@ -53,47 +49,25 @@ def add_entry(name, *args):
 # end def
 
 @error_handler
-def delete_entry(name, phone=None):
-    if phone == None:
-        return book.delete_record(name)
-    # end if
-
-    if Birthday.is_birthday(phone):
-        raise IncorrectDataType
-    # end if
-    
-    return book.find(name).delete_phone(phone)
-# end def
-
-@error_handler
 def modify_entry(name, *args):
     if len(args) < 1:
         raise InsufficientDataEntered
 
     record: Record = book.find(name)
-    args = list(args)
 
     msg = []
-    while True:
-        arg: str = args.pop(0)
+    for arg in args:
+        if Name.is_name(arg):
+            msg.append(book.change_name(name, arg))
+        else:
+            phonelist = re.split('-|_', arg)
 
-        try:
-            if Birthday.is_birthday(arg):
-                msg.append(record.set_birthday(arg))
-            elif Name.is_name(arg):
-                msg.append(book.change_name(name, arg))
+            if len(phonelist) == 2 and Phone.is_phone(phonelist[0]) and Phone.is_phone(phonelist[1]):
+                msg.append(record.modify_phone(phonelist[0], phonelist[1]))
             else:
-                phonelist = re.split('-|_', arg)
-                
-                if len(phonelist) == 2 and Phone.is_phone(phonelist[0]) and Phone.is_phone(phonelist[1]):
-                    msg.append(record.modify_phone(phonelist[0], phonelist[1]))
-                else:
-                    raise Exception
-                # end if
+                msg.append(f"Запис '{arg}' в невірному форматі. Пропускаю")
             # end if
-        except Exception as e:
-            msg.append((f"Запис '{arg}' в невірному форматі. Пропускаю") if (str(e) == "") else str(e))
-        # end try
+        # end if
 
         if len(args) == 0:
             break
@@ -105,6 +79,19 @@ def modify_entry(name, *args):
     # end if
 
     return "\n".join(msg)
+# end def
+
+@error_handler
+def delete_entry(name, phone=None):
+    if phone == None:
+        return book.delete_record(name)
+    # end if
+
+    if Birthday.is_date_format(phone):
+        raise IncorrectDataType("Неможливо видалити День народження")
+    # end if
+
+    return book.find(name).delete_phone(phone)
 # end def
 
 @error_handler
@@ -138,30 +125,30 @@ def print_data(data, fields_to_show=["all"]):
 def get_birthdays_per_week():
     next_birthdays = book.get_upcoming_birthdays()
 
-    output = []
+    msg = []
     for next_workday in Birthday.get_next_workdays():
         if len(next_birthdays[next_workday]):
             bday_str = ", ".join(list(map(
                 lambda x: f"{x.name} ({(datetime.now().year - int(x.birthday[6:]))})",
                 next_birthdays[next_workday]
             )))
-            output.append(
+            msg.append(
                 f"{Birthday.weekdays_name[next_workday]:>11}: {bday_str}"
             )
         # end if
     # end for
-    
-    if len(output):
-        return "\n".join(output)
+
+    if len(msg):
+        return "\n".join(msg)
     # end if
-    
+
     return "На наступному тижні немає іменинників"
 # end def
 
 
 def run_bot():
     global book
-    
+
     try:
         book.load()
     except FileAccessError as e:
@@ -175,7 +162,7 @@ def run_bot():
         print("#\n#  Аварійне завершення програми!\n#")
         exit(0)
     # end try
-    
+
     print(greeting)
 
     while True:
@@ -212,18 +199,22 @@ def run_bot():
                 print("До побачення!")
                 book.save()
                 break
+
+            # ****** remove after testing ******
             elif command in ["save"]:
                 book.save()
                 print("Данні збережено")
             elif command in ["load"]:
                 book.load()
                 print("Данні завантажено")
+            # **********************************
+
             else:
                 print("Сформулюйте запит відповідно командам в 'help'")
             # end if
-            
+
         except Exception as e:
-            print(e)
+            if len(str(e)): print(e)
             continue
         # end try
     # end while

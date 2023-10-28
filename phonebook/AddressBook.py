@@ -21,12 +21,12 @@ class AddressBook(UserDict):
         self.data = UserDict()
         self.database_connector = FileWriter(filename)
     # end def
-    
+
     @error_handler
     def save(self):
         self.database_connector.save(self.data)
     # end def
-    
+
     @error_handler
     def load(self):
         self.data = UserDict(self.database_connector.load())
@@ -36,7 +36,7 @@ class AddressBook(UserDict):
         res = self.data.get(needle, None)
 
         if res == None:
-            raise NoDataFound
+            raise NoDataFound("Контакт не знайдений")
         # end if
 
         return res
@@ -49,13 +49,9 @@ class AddressBook(UserDict):
         # end if
 
         if record.name in self.data.keys():
-            if len(record.phones) > 0:
-                record.phones.extend(self.data[record.name].phones)
-                record.phones = list(set(record.phones))
-                return self.modify_record(record)
-            else:
-                raise DuplicateEntry("Контакт")
-            # end if
+            record.phones.extend(self.data[record.name].phones)
+            record.phones = list(set(record.phones))
+            return self.modify_record(record)
         # end if
 
         self.data[record.name] = record
@@ -65,7 +61,7 @@ class AddressBook(UserDict):
     @saver
     def change_name(self, old_name, new_name=None):
         if new_name == None:
-            raise InsufficientDataEntered
+            raise InsufficientDataEntered("Введіть нове імʼя")
         if old_name == new_name:
             return "Нічого не міняю"
         if new_name in self.data.keys():
@@ -90,9 +86,9 @@ class AddressBook(UserDict):
     @saver
     def delete_record(self, name):
         if name not in self.data:
-            raise NoDataFound
+            raise NoDataFound("Контакт не знайдений")
         # end if
-        
+
         self.data.pop(name)
         return "Контакт видалений успішно"
     # end def
@@ -123,8 +119,3 @@ class AddressBook(UserDict):
         return next_birthdays
     # end def
 # end class
-
-
-if __name__ == "__main__":
-    exit()
-# end if
