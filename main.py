@@ -210,16 +210,6 @@ def run_bot():
                 print("До побачення!")
                 book.save()
                 break
-
-            # ****** remove after testing ******
-            elif command in ["save"]:
-                book.save()
-                print("Данні збережено")
-            elif command in ["load"]:
-                book.load()
-                print("Данні завантажено")
-            # **********************************
-
             else:
                 print("Сформулюйте запит відповідно командам в 'help'")
             # end if

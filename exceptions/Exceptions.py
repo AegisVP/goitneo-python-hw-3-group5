@@ -67,7 +67,7 @@ def error_handler(func):
         except FileAccessError as e:
             print(
                 f"Неможливо {({'read': 'прочитати файл', 'write': 'записати в файл'}[str(e)])}")
-            raise FileAccessError
+            raise FileAccessError(e)
         except ValueError as e:
             print(e)
             raise ValueError
