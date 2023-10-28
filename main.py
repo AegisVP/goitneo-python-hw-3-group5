@@ -32,16 +32,22 @@ def add_entry(name, *args):
     record = book.data.get(name, None) or Record(name)
 
     msg = []
+    success = False
     for arg in args:
         if Birthday.is_date_format(arg):
             msg.append(record.set_birthday(arg))
+            success = True
         elif Phone.is_phone(arg):
             msg.append(record.add_phone(arg))
+            success = True
         else:
             msg.append(f"Запис '{arg}' в невірному форматі. Пропускаю")
         # end if
-        msg.append(book.add_record(record))
     # end for
+
+    if success:
+        msg.append(book.add_record(record))
+    # end if
 
     if len(msg) == 0:
         msg.append("Нічого не вийшло записати")
